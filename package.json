@@ -1,7 +1,7 @@
 {
   "name": "transition-router-react",
   "version": "1.0.0",
-  "description": "A small powerfull router leveraging react transitions for a more interactive UX.",
+  "description": "A small powerful router leveraging react transitions for a more interactive UX.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
   "files": [
@@ -20,6 +20,9 @@
   ],
   "author": "Wirdehall (https://github.com/wirdehall)",
   "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/wirdehall/transition-router-react/issues"
+  },
   "devDependencies": {
     "@types/react": "^18.2.51",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
