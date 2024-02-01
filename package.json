@@ -12,6 +12,10 @@
     "build:watch": "tsc --watch",
     "lint": "eslint ."
   },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/wirdehall/transition-router-react.git"
+  },
   "keywords": [
     "react",
     "router",
@@ -23,6 +27,7 @@
   "bugs": {
     "url": "https://github.com/wirdehall/transition-router-react/issues"
   },
+  "homepage": "https://github.com/wirdehall/transition-router-react#readme",
   "devDependencies": {
     "@types/react": "^18.2.51",
     "@typescript-eslint/eslint-plugin": "^6.20.0",
