@@ -25,7 +25,7 @@ $ npm i transition-router-react
 import React from 'react'
 import ReactDOM from 'react-dom/client'
 import { RouterRenderer, Router } from 'transition-router-react';
-import { getRoutes } from './routing/routes.tsx';
+import { getRoutes } from './routing/routes.ts';
 
 const router = Router({ routes: getRoutes() });
 
@@ -38,8 +38,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 );
 ```
 ```ts
-// routing/routes.tsx
-import type { Routes } from 'transition-router-react/router.types';
+// routing/routes.ts
+import type { Routes } from 'transition-router-react/dist/router.types';
 export const getRoutes = (): Routes => {
   return [
     {
@@ -47,21 +47,21 @@ export const getRoutes = (): Routes => {
       children: [
         {
           path: '',
-          component: React.lazy(import("./pages/start")),
+          component: React.lazy(() => import("./pages/start")),
         },
         {
           path: 'contact',
-          component: React.lazy(import("./pages/contact")),
+          component: React.lazy(() => import("./pages/contact")),
         },
         {
           path: 'blog/:search/:page',
-          component: React.lazy(import("./pages/show/tire-show-page.loader")),
+          component: React.lazy(() => import("./pages/show/tire-show-page.loader")),
         },
       ]
     },
     {
       path: '*',
-      component: React.lazy(import("./pages/404"))
+      component: React.lazy(() => import("./pages/404"))
     },
   ];
 }
@@ -130,3 +130,8 @@ Example: `path: 'blog/:search/:page'`
 const urlParams = useParams();
 console.log(urlParams.search, urlParams.page);
 ```
+
+
+## Contributing
+
+Anyone is free to open a PR and contribute to this project... just be civilized!
