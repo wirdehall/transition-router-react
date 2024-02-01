@@ -41,14 +41,18 @@ $ npm i transition-router-react
 | -------------- | ----------------------------------------------------------------- |
 | Router         | Takes `RouterParams` object as param. Returns `RouterReturnType`. |
 | RouterRenderer | Takes `RouterReturnType` as param.                                |
+
 <br><br>
+
 | Type             | Description                                                       |
 | ---------------- | ----------------------------------------------------------------- |
 | Routes | ReadonlyArray\<Route\> |
 | Route | Readonly<{<br>&nbsp;&nbsp;component: React.ComponentType<PropsWithChildren>;<br>&nbsp;&nbsp;path?: string;<br>&nbsp;&nbsp;children?: Routes;<br>}> |
 | RouterParams     |  Readonly<{ routes: Routes, path?: string, ssr?: boolean }><br><br>If used in SSR context the `ssr` and `path` flag needs to be pressent.<br>`ssr` set to true and path flag set to requested path.<br> |
 | RouterReturnType |Readonly<{<br>&nbsp;&nbsp;subscribe: (eventHandler: EventHandler) => void;<br>&nbsp;&nbsp;publish: (event: Event) => void;<br>&nbsp;&nbsp;navigate: NavigateFunction;<br>&nbsp;&nbsp;initalMatchedRoute: MatchedRoute \| undefined;<br>&nbsp;&nbsp;initalLocationPath: string;<br>&nbsp;&nbsp;initalParams: Params;<br>}><br><br>The entire return object should be passed to RouterRenderer but we can also make use of subscribe and publish for advanced use-cases. |
+
 <br><br>
+
 | Hook             | Description                                                       |
 | ---------------- | ----------------------------------------------------------------- |
 | useNavigate      | Returns a function for navigating. Is the only way you should navigate inside your applicaiton.<br>The only exception would be if you are navigating outside of react context, for example in redux or something like that. Then you can use the navigate function returned in `RouterReturnType`.  |
