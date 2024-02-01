@@ -3,6 +3,8 @@ Transition-router-react is a small powerful router leveraging react transitions 
 
 ## Table of content <!-- omit in toc -->
 - [Motivation](#motivation)
+  - [Benefits compared to competitors](#benefits-compared-to-competitors)
+  - [When not to use this router](#when-not-to-use-this-router)
 - [Requirements](#requirements)
 - [How to install](#how-to-install)
 - [API](#api)
@@ -20,6 +22,7 @@ Transition-router-react is a small powerful router leveraging react transitions 
     - [useNavigate](#usenavigate)
     - [useLocationPath](#uselocationpath)
     - [useParams](#useparams)
+- [Future features to implement](#future-features-to-implement)
 - [Contributing](#contributing)
 
 
@@ -30,6 +33,23 @@ with reacts new features so I buildt my own.
 Goals for this was a small event based router which would be easy to subscribe to with very similar router definitions to react-routers
 data api.
 A plus would be if the repo would add zero dependencies to any project using this. Dependency bloat and dependency hell is a real thing.
+
+### Benefits compared to competitors
+| Comparison point | transition-router-react | react-router |
+|------------------|------------------------ |------------- |
+| Dependencies | 0 | 1 |
+| Size gziped + minified | 2kb | 18.7kb *(2024-02-01)*|
+| Size gziped + minified including deps | 2kb | 35.2kb *(2024-02-01)*|
+| Native Transitions | Yes | No, needs to hack around, using hidden functions that can be changed at any point |
+| Easy use with SSR | One router, works out of the box | Needs to use multiple routers |
+
+### When not to use this router
+TRR (transition-router-react) does not try to solve every obscure use-case, I'm aming for the unix approach instead, make it do one thing well.  
+With that said I think this repo will be able to handle the majority of use-cases.  
+Features not included on purpose:
+* Data fetching before route loads. **Reason:** Many of the popular data-fetching libs been moving towards hooks and that does not work outside react components. Seams like bloat to implement a feature which will be unsed by most.
+* Separete errorBoundry parameter. **Reason:** Just wrap your route with a parent errorBoundry no need to introduce more complexity. I found that most of the time I will even want multiple routes sharing errorBoundry so declaring for each route seams wastefull as well.
+* Case-sensitve paths **Reason:** Don't see a use-case for this. I know the W3 definition of a url states that it should be case-sensitve but; I have never in my life seen a url which had upper-case characters and doesn't work with lower-case. I'm sure they exist but that's not good UX and not something that should be encuraged in my opinion. 
 
 ## Requirements
 * React >= 18
@@ -263,6 +283,11 @@ Example: `path: 'blog/:search/:page'`
 const urlParams = useParams();
 console.log(urlParams.search, urlParams.page);
 ```
+
+## Future features to implement
+* **Route guards** might be something I'll be looking into. But I'm going to investigate the topic more before adding more features.  
+If you would like to see Route guards or not please let me know and why. I will take it in to consideration while deciding.
+* If you know something you think should be part of TRR that is currently missing, let me know. But know that I will be taking a conservative stance on adding features since I don't want this repo to be bloated. As I mentioned under [When not to use this router](#when-not-to-use-this-router), the aim is to do one thing well. Not everything.
 
 
 ## Contributing
