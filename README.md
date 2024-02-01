@@ -6,6 +6,9 @@ Transition-router-react is a small powerful router leveraging react transitions 
 - [Requirements](#requirements)
 - [How to install](#how-to-install)
 - [API](#api)
+  - [Component API](#component-api)
+  - [Exported types API](#exported-types-api)
+  - [Hook API](#hook-api)
 - [How to use](#how-to-use)
   - [How to define a path in your routes](#how-to-define-a-path-in-your-routes)
     - [Wildcard](#wildcard)
@@ -37,12 +40,13 @@ $ npm i transition-router-react
 ```
 
 ## API
+### Component API
 | Component      | Description                                                       |
 | -------------- | ----------------------------------------------------------------- |
 | Router         | Takes `RouterParams` object as param. Returns `RouterReturnType`. |
 | RouterRenderer | Takes `RouterReturnType` as param.                                |
 
-<br><br>
+### Exported types API
 
 | Type             | Description                                                       |
 | ---------------- | ----------------------------------------------------------------- |
@@ -51,7 +55,7 @@ $ npm i transition-router-react
 | RouterParams     |  Readonly<{ routes: Routes, path?: string, ssr?: boolean }><br><br>If used in SSR context the `ssr` and `path` flag needs to be pressent.<br>`ssr` set to true and path flag set to requested path.<br> |
 | RouterReturnType |Readonly<{<br>&nbsp;&nbsp;subscribe: (eventHandler: EventHandler) => void;<br>&nbsp;&nbsp;publish: (event: Event) => void;<br>&nbsp;&nbsp;navigate: NavigateFunction;<br>&nbsp;&nbsp;initalMatchedRoute: MatchedRoute \| undefined;<br>&nbsp;&nbsp;initalLocationPath: string;<br>&nbsp;&nbsp;initalParams: Params;<br>}><br><br>The entire return object should be passed to RouterRenderer but we can also make use of subscribe and publish for advanced use-cases. |
 
-<br><br>
+### Hook API
 
 | Hook             | Description                                                       |
 | ---------------- | ----------------------------------------------------------------- |
