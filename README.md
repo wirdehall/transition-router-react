@@ -1,5 +1,24 @@
-# Transition-router-react
+# Transition-router-react <!-- omit in toc -->
 Transition-router-react is a small powerful router leveraging react transitions for a more interactive UX.
+
+## Table of content <!-- omit in toc -->
+- [Motivation](#motivation)
+- [Requirements](#requirements)
+- [How to install](#how-to-install)
+- [API](#api)
+- [How to use](#how-to-use)
+  - [How to define a path in your routes](#how-to-define-a-path-in-your-routes)
+    - [Wildcard](#wildcard)
+    - [Splat](#splat)
+  - [Simple example](#simple-example)
+  - [Example of transition and navigation stored in redux](#example-of-transition-and-navigation-stored-in-redux)
+  - [Advanced example of SSR usage using express](#advanced-example-of-ssr-usage-using-express)
+  - [Hooks for convinience](#hooks-for-convinience)
+    - [useNavigate](#usenavigate)
+    - [useLocationPath](#uselocationpath)
+    - [useParams](#useparams)
+- [Contributing](#contributing)
+
 
 ## Motivation
 I was building a react frontend where I needed transitions instead of suspended navigation. To add to this it had to work
@@ -17,7 +36,47 @@ A plus would be if the repo would add zero dependencies to any project using thi
 $ npm i transition-router-react
 ```
 
+## API
+| Component      | Description                                                       |
+| -------------- | ----------------------------------------------------------------- |
+| Router         | Takes `RouterParams` object as param. Returns `RouterReturnType`. |
+| RouterRenderer | Takes `RouterReturnType` as param.                                |
+
+| Type             | Description                                                       |
+| ---------------- | ----------------------------------------------------------------- |
+| Routes | ReadonlyArray\<Route\> |
+| Route | Readonly<{<br>&nbsp;&nbsp;component: React.ComponentType<PropsWithChildren>;<br>&nbsp;&nbsp;path?: string;<br>&nbsp;&nbsp;children?: Routes;<br>}> |
+| RouterParams     |  Readonly<{ routes: Routes, path?: string, ssr?: boolean }><br><br>If used in SSR context the `ssr` and `path` flag needs to be pressent.<br>`ssr` set to true and path flag set to requested path.<br> |
+| RouterReturnType |Readonly<{<br>&nbsp;&nbsp;subscribe: (eventHandler: EventHandler) => void;<br>&nbsp;&nbsp;publish: (event: Event) => void;<br>&nbsp;&nbsp;navigate: NavigateFunction;<br>&nbsp;&nbsp;initalMatchedRoute: MatchedRoute \| undefined;<br>&nbsp;&nbsp;initalLocationPath: string;<br>&nbsp;&nbsp;initalParams: Params;<br>}><br><br>The entire return object should be passed to RouterRenderer but we can also make use of subscribe and publish for advanced use-cases. |
+
+| Hook             | Description                                                       |
+| ---------------- | ----------------------------------------------------------------- |
+| useNavigate      | Returns a function for navigating. Is the only way you should navigate inside your applicaiton.<br>The only exception would be if you are navigating outside of react context, for example in redux or something like that. Then you can use the navigate function returned in `RouterReturnType`.  |
+| useLocationPath  | Returns current urlPath works both in SSR context and in browser. |
+| useParams        | Returns an object with url params defined in your routes. Not to be confused with get params in the url. |
+
 ## How to use
+
+### How to define a path in your routes
+
+Path is optional as long as your `Route` has children.  
+A `Route` with children can still have a path, it will be prepended to all child routes.  
+A path does not start with a slash or end trailing slash.
+
+A path is otherwise just a string with the ability to use wildcards and splat.  
+
+#### Wildcard
+A wildcard starts with a colon.  
+Example: `blog/:page` in this url page will be a wildcard and will match `blog/1` or `blog/this-is-a-title`.  
+But it will not match `blog/1/more-stuff` or just `blog`.
+
+#### Splat
+A splat is denoted by `*`.  
+Example: `blog/*` in this url page will be a wildcard and will match `blog/1`, `blog/this-is-a-title` or `blog/this-is-a-title/potato/tomato`.  
+But it will not match just `blog`.
+
+A splat has to be at the end of the path definition. It's not allowed if the `Route` has children or in the middle of the path definition.
+Example of invalid splat useage: `*/blog` or `blog/*/tomato` you will have to use wildcards and be more precis in these use-cases.
 
 ### Simple example
 ```ts
@@ -39,7 +98,7 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 ```
 ```ts
 // routing/routes.ts
-import type { Routes } from 'transition-router-react/dist/router.types';
+import type { Routes } from 'transition-router-react';
 export const getRoutes = (): Routes => {
   return [
     {
@@ -66,7 +125,6 @@ export const getRoutes = (): Routes => {
   ];
 }
 ```
-
 ### Example of transition and navigation stored in redux
 ```ts
 // index.ts
@@ -87,6 +145,73 @@ router.subscribe(({ eventName, data }) => {
 
 ```
 I personaly subscribe to the `transition` event and use `isTransitioning` in redux to to show navigation transitions in my application.
+
+### Advanced example of SSR usage using express
+```ts
+// Express input here...
+// Including request, bootstrapScripts, errorMessage if we get one of those etc.
+// ...
+
+const origin = `${request.protocol}://${request.get("host")}`;
+const url = new URL(request.originalUrl || request.url, origin);
+const path = url.pathname;
+
+const routes = getRoutes();
+const router = Router({ routes, path, ssr: true });
+
+const error = errorMessage
+  ? new InternalServerError(errorMessage)
+  : undefined;
+
+let errorBoundaryTriggeredError: BaseError | undefined;
+const receiveError = (error: BaseError) => {
+  errorBoundaryTriggeredError = error;
+}
+
+const getErrorBoundaryTriggeredError = () => errorBoundaryTriggeredError;
+
+let fallbackResolved = false;
+let resolveFallbackPromise: (val?: boolean | undefined) => void;
+const fallbackPromise = new Promise((resolve) => {
+  resolveFallbackPromise = () => {
+    fallbackResolved = true;
+    resolve(true);
+  };
+})
+
+const Fallback = ({ getError }: { getError: () => BaseError | undefined }) => {
+  if(!fallbackResolved) {
+    throw fallbackPromise;
+  }
+  const routerContext = {
+    navigate: router.navigate,
+    params: router.initalParams,
+    locationPath: router.initalLocationPath,
+  }
+
+  return <RouterContext.Provider value={routerContext}><ErrorRenderer error={getError()} /></RouterContext.Provider>;
+}
+
+const { pipe, abort } = ReactDOM.renderToPipeableStream(
+  (
+    <React.StrictMode>
+      <Suspense fallback={<Fallback getError={getErrorBoundaryTriggeredError} />}>
+        <RouterRenderer { ...router } />
+      </Suspense>
+    </React.StrictMode>
+  ),
+  {
+    ...bootstrapScripts,
+    onAllReady() {
+      // Render logic here...
+    },
+    onError(error) {
+      receiveError(error);
+      resolveFallbackPromise();
+    }
+  }
+); 
+```
 
 ### Hooks for convinience
 The following hooks are exposed `useNavigate`, `useLocationPath`, `useParams` to be used in your components.

@@ -46,12 +46,7 @@ export type TransitionEvent = {
   data: { isTransitioning: boolean }
 }
 
-export type ReadyEvent = {
-  eventName: 'ready',
-}
-
 export type Event = NavigationEvent | TransitionEvent;
-
 
 export type EventHandler = ({ eventName, data }: Event) => void;
 
@@ -62,6 +57,6 @@ export type RouterReturnType = Readonly<{
   publish: (event: Event) => void;
   navigate: NavigateFunction;
   initalMatchedRoute: MatchedRoute | undefined;
-  initalLocationPath: string,
-  initalParams: Params,
+  initalLocationPath: string;
+  initalParams: Params;
 }>;
