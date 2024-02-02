@@ -12,17 +12,18 @@ Transition-router-react is a small powerful router leveraging react transitions 
   - [Exported types API](#exported-types-api)
   - [Hook API](#hook-api)
 - [How to use](#how-to-use)
+  - [Defining a Route](#defining-a-route)
   - [How to define a path in your routes](#how-to-define-a-path-in-your-routes)
     - [Wildcard](#wildcard)
     - [Splat](#splat)
   - [Simple example](#simple-example)
   - [Example of transition and navigation stored in redux](#example-of-transition-and-navigation-stored-in-redux)
   - [Advanced example of SSR usage using express](#advanced-example-of-ssr-usage-using-express)
+  - [Example of submenu as extraComponent](#example-of-submenu-as-extracomponent)
   - [Hooks for convinience](#hooks-for-convinience)
     - [useNavigate](#usenavigate)
     - [useLocationPath](#uselocationpath)
     - [useParams](#useparams)
-- [Future features to implement](#future-features-to-implement)
 - [Contributing](#contributing)
 
 
@@ -73,7 +74,7 @@ $ npm i transition-router-react
 | Type             | Description                                                       |
 | ---------------- | ----------------------------------------------------------------- |
 | Routes | ReadonlyArray\<Route\> |
-| Route | Readonly<{<br>&nbsp;&nbsp;component: React.ComponentType<PropsWithChildren>;<br>&nbsp;&nbsp;path?: string;<br>&nbsp;&nbsp;children?: Routes;<br>}> |
+| Route | Readonly<{<br>&nbsp;&nbsp;component: React.ComponentType<PropsWithChildren<{ [name: string]: ReactNode }>>;<br>&nbsp;&nbsp;path?: string;<br>&nbsp;&nbsp;children?: Routes;<br>&nbsp;&nbsp;extraComponents?: Readonly<{ [name: string]: React.ComponentType\<PropsWithChildren> }>;<br>}> |
 | RouterParams     |  Readonly<{ routes: Routes, path?: string, ssr?: boolean }><br><br>If used in SSR context the `ssr` and `path` flag needs to be pressent.<br>`ssr` set to true and path flag set to requested path.<br> |
 | RouterReturnType |Readonly<{<br>&nbsp;&nbsp;subscribe: (eventHandler: EventHandler) => void;<br>&nbsp;&nbsp;publish: (event: Event) => void;<br>&nbsp;&nbsp;navigate: NavigateFunction;<br>&nbsp;&nbsp;initalMatchedRoute: MatchedRoute \| undefined;<br>&nbsp;&nbsp;initalLocationPath: string;<br>&nbsp;&nbsp;initalParams: Params;<br>}><br><br>The entire return object should be passed to RouterRenderer but we can also make use of subscribe and publish for advanced use-cases. |
 
@@ -86,6 +87,17 @@ $ npm i transition-router-react
 | useParams        | Returns an object with url params defined in your routes. Not to be confused with get params in the url. |
 
 ## How to use
+
+### Defining a Route
+  `component`: A Route needs to have a component to render. This will be the component that is rendered for this url.  
+  If a Route has children the component will recieve the matched child component as a paramenter.  
+
+  `path`: Determines if url is a match or not. More on paths below.
+
+  `children`: Are just an array of more Routes. It can go recursivly as many steps as you want.
+
+  `extraComponents`: An object with components that will be added as paramenters to the defined `component` of this Route regardless of which child is being rendered. Example of use-case is when a layout have different submenu depending on which route is being shown. Guards could also be a use-case.
+
 
 ### How to define a path in your routes
 
@@ -270,6 +282,64 @@ const { pipe, abort } = ReactDOM.renderToPipeableStream(
 ); 
 ```
 
+### Example of submenu as extraComponent
+```ts
+  {
+    component: Layout,
+    path: 'article',
+    extraComponents: {
+      submenu: ArticleSubmenu,
+    },
+    children: [
+      {
+        path: '',
+        component: ArticleList,
+      },
+      {
+        path: ':articleId',
+        component: ShowArticle,
+      }
+    ]
+  },
+  {
+    component: Layout,
+    path: 'blog',
+    extraComponents: {
+      submenu: BlogSubmenu,
+    },
+    children: [
+      {
+        path: '',
+        component: BlogList,
+      },
+      {
+        path: ':blogId',
+        component: ShowBlog,
+      }
+    ]
+  },
+```
+
+```ts
+  // Layout component
+  import { PropsWithChildren, ReactNode} from 'react'
+  import TopMenu from './top-menu';
+
+  export default function App({ submenu, children }: PropsWithChildren<{ [name: string]: ReactNode }>) {
+  return (
+    <div className="body">
+      <div className="menu-wrapper">
+        <TopMenu />
+        { submenu }
+      </div>
+      <div className="page">
+        { children }
+      </div>
+    </div>
+  )
+}
+```
+
 ### Hooks for convinience
 The following hooks are exposed `useNavigate`, `useLocationPath`, `useParams` to be used in your components.
 
@@ -312,11 +382,6 @@ Example: `path: 'blog/:search/:page'`
 const urlParams = useParams();
 console.log(urlParams.search, urlParams.page);
 ```
-
-## Future features to implement
-* **Route guards** might be something I'll be looking into. But I'm going to investigate the topic more before adding more features.  
-If you would like to see Route guards or not please let me know and why. I will take it in to consideration while deciding.
-* If you know something you think should be part of TRR that is currently missing, let me know. But know that I will be taking a conservative stance on adding features since I don't want this repo to be bloated. As I mentioned under [When not to use this router](#when-not-to-use-this-router), the aim is to do one thing well. Not everything.
 
 
 ## Contributing

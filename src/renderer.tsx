@@ -20,8 +20,23 @@ const Renderer = memo(({ notFound, navigate, initalParams, initalLocationPath, .
   const renderRecursive = useCallback((matchedRoute: MatchedRouteFragment) => {
     const Comp = matchedRoute.component;
 
+    let extraComponents;
+    if(matchedRoute.extraComponents) {
+      extraComponents = Object.entries(matchedRoute.extraComponents).reduce((acc, [name, Component]) => ({
+        ...acc, [name]: <Component></Component>
+      }), {});
+    }
+
     if(matchedRoute.child) {
-      return <Comp>{ renderRecursive(matchedRoute.child) }</Comp>
+      if (extraComponents) {
+        return <Comp { ...extraComponents }>{ renderRecursive(matchedRoute.child) }</Comp>;
+      }
+
+      return <Comp>{ renderRecursive(matchedRoute.child) }</Comp>;
+    }
+
+    if (extraComponents) {
+      return <Comp { ...extraComponents }></Comp>;
     }
 
     return <Comp></Comp>
