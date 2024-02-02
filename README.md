@@ -51,6 +51,8 @@ Features not included on purpose:
 * Separete errorBoundry parameter. **Reason:** Just wrap your route with a parent errorBoundry no need to introduce more complexity. I found that most of the time I will even want multiple routes sharing errorBoundry so declaring for each route seams wastefull as well.
 * Case-sensitve paths **Reason:** Don't see a use-case for this. I know the W3 definition of a url states that it should be case-sensitve but; I have never in my life seen a url which had upper-case characters and doesn't work with lower-case. I'm sure they exist but that's not good UX and not something that should be encuraged in my opinion. 
 
+If one of these features are required for you, then this router is probably not for your current project.
+
 ## Requirements
 * React >= 18
 
