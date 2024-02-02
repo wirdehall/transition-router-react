@@ -127,6 +127,8 @@ ReactDOM.createRoot(document.getElementById('root')!).render(
 ```ts
 // routing/routes.ts
 import type { Routes } from 'transition-router-react';
+import CoreDefaultLayout from "@modules/core/layouts/default/default.layout";
+
 export const getRoutes = (): Routes => {
   return [
     {
@@ -153,6 +155,31 @@ export const getRoutes = (): Routes => {
   ];
 }
 ```
+
+```ts
+// @modules/core/layouts/default/default.layout.tsx
+import CoreTopBar from '@modules/core/components/top-bar/top-bar';
+import CoreTopMenu from '@modules/core/components/top-menu/top-menu';
+import CoreFooter from '@modules/core/components/footer/footer';
+
+import type { PropsWithChildren } from 'react';
+
+// Children is passed by the router if there are nested routes.
+export default function CoreDefaultLayout({ children }: PropsWithChildren) {
+  return (
+    <div className="layout-body">
+      <CoreTopBar />
+      <CoreTopMenu />
+      <div className="page">
+        { children }
+      </div>
+      <CoreFooter />
+    </div>
+  )
+}
+
+```
+
 ### Example of transition and navigation stored in redux
 ```ts
 // index.ts
@@ -188,7 +215,7 @@ const routes = getRoutes();
 const router = Router({ routes, path, ssr: true });
 
 const error = errorMessage
-  ? new InternalServerError(errorMessage)
+  ? new Error(errorMessage)
   : undefined;
 
 let errorBoundaryTriggeredError: BaseError | undefined;
