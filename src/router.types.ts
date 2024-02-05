@@ -2,13 +2,14 @@ import type { PropsWithChildren, ReactNode } from "react";
 
 export type Params = Readonly<{ [key: string]: string }>;
 
-export type ExtraComponents = Readonly<{ [name: string]: React.ComponentType<PropsWithChildren> }>;
+export type ExtraComponents = Readonly<{ [name: string]: ReactNode }>;
+type ExtraComponentDefenitions = Readonly<{ [name: string]: React.ComponentType<PropsWithChildren> }>;
 
 export type MatchedRouteFragment = {
   component: React.ComponentType<PropsWithChildren>;
   child?: MatchedRouteFragment;
   params: Params;
-  extraComponents?: ExtraComponents;
+  extraComponents?: ExtraComponentDefenitions;
 }
 
 export type MatchedRoute = {
@@ -20,7 +21,7 @@ export type Route = Readonly<{
   component: React.ComponentType<PropsWithChildren<{ [name: string]: ReactNode }>>;
   path?: string;
   children?: Routes;
-  extraComponents?: ExtraComponents;
+  extraComponents?: ExtraComponentDefenitions;
 }>;
 
 export type PathFragment = {

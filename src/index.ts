@@ -3,7 +3,7 @@ import Router from './router';
 import { useNavigate } from './custom-hooks/use-navigate';
 import { useLocationPath } from './custom-hooks/use-location-path';
 import { useParams } from './custom-hooks/use-params';
-import type { Event, EventHandler, Routes } from './router.types';
+import type { Event, EventHandler, Routes, ExtraComponents } from './router.types';
 
 export {
   Renderer as RouterRenderer,
@@ -13,5 +13,6 @@ export {
   useParams,
   Routes,
   Event,
-  EventHandler
+  EventHandler,
+  ExtraComponents
 };

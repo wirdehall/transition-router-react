@@ -322,10 +322,11 @@ const { pipe, abort } = ReactDOM.renderToPipeableStream(
 
 ```ts
   // Layout component
-  import { PropsWithChildren, ReactNode} from 'react'
+  import { PropsWithChildren } from 'react'
+  import { ExtraComponents } from 'transition-router-react';
   import TopMenu from './top-menu';
 
-  export default function App({ submenu, children }: PropsWithChildren<{ [name: string]: ReactNode }>) {
+  export default function App({ submenu, children }: PropsWithChildren<ExtraComponents>) {
   return (
     <div className="body">
       <div className="menu-wrapper">
