@@ -10,11 +10,12 @@ export const matchRouteFragment = (pathFragments: ReadonlyArray<string>, routes:
   for (const route of routes) {
     let params: Params = {};
     let stillAMatch = true;
+    const baseRouteFragment = { component: route.component, extraComponents: route.extraComponents, guards: route.guards };
     if(route.pathFragments.length === 0) {
       if(route.children) {
         const child = matchRouteFragment(pathFragments, route.children);
         if(child != undefined) {
-          return { component: route.component, child, params, extraComponents: route.extraComponents };
+          return { ...baseRouteFragment, child, params };
         }
         continue;
       } else {
@@ -32,7 +33,7 @@ export const matchRouteFragment = (pathFragments: ReadonlyArray<string>, routes:
           break;
         }
         if(routeFragment.splat) {
-          return { component: route.component, params, extraComponents: route.extraComponents };
+          return { ...baseRouteFragment, params };
         }
         if(routeFragment.wildcard) {
           params = { ...params, [routeFragment.fragment]: pathFragments[i] };
@@ -49,10 +50,10 @@ export const matchRouteFragment = (pathFragments: ReadonlyArray<string>, routes:
       if(route.children) {
         const child = matchRouteFragment(remainingFragments, route.children);
         if(child != undefined) {
-          return { component: route.component, child, params, extraComponents: route.extraComponents };
+          return { ...baseRouteFragment, child, params };
         }
       } else if(remainingFragments.length === 0) {
-        return { component: route.component, params, extraComponents: route.extraComponents };
+        return { ...baseRouteFragment, params };
       }
     }
   }

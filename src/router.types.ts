@@ -5,11 +5,15 @@ export type Params = Readonly<{ [key: string]: string }>;
 export type ExtraComponents = Readonly<{ [name: string]: ReactNode }>;
 type ExtraComponentDefenitions = Readonly<{ [name: string]: React.ComponentType<PropsWithChildren> }>;
 
+export type Guard = React.FunctionComponent<PropsWithChildren>;
+export type Guards = ReadonlyArray<React.ComponentType<PropsWithChildren>>;
+
 export type MatchedRouteFragment = {
   component: React.ComponentType<PropsWithChildren>;
   child?: MatchedRouteFragment;
   params: Params;
   extraComponents?: ExtraComponentDefenitions;
+  guards?: Guards;
 }
 
 export type MatchedRoute = {
@@ -22,6 +26,7 @@ export type Route = Readonly<{
   path?: string;
   children?: Routes;
   extraComponents?: ExtraComponentDefenitions;
+  guards?: Guards;
 }>;
 
 export type PathFragment = {
@@ -43,7 +48,7 @@ export type InternalRoutes = ReadonlyArray<InternalRoute>;
 
 export type NavigationEvent = {
   eventName: 'navigation',
-  data: { matchedRoute: MatchedRoute, params: Params, locationPath: string }
+  data: { matchedRoute: MatchedRoute, params: Params, locationPath: string, doneCallback: () => void },
 }
 
 export type TransitionEvent = {
@@ -55,10 +60,13 @@ export type Event = NavigationEvent | TransitionEvent;
 
 export type EventHandler = ({ eventName, data }: Event) => void;
 
-export type NavigateFunction = (url: string | undefined, force?: boolean, updateHistory?: boolean) => void;
+export type NavigateFunction = (
+  url: string | undefined,
+  options?: { force?: boolean, updateHistory?: boolean, async?: boolean }
+) => Promise<boolean>;
 
 export type RouterReturnType = Readonly<{
-  subscribe: (eventHandler: EventHandler) => void;
+  subscribe: (eventHandler: EventHandler) => () => void;
   publish: (event: Event) => void;
   navigate: NavigateFunction;
   initalMatchedRoute: MatchedRoute | undefined;

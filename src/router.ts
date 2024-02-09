@@ -1,4 +1,4 @@
-import { EventHandler, Event, RouterReturnType, Routes, InternalRoutes, MatchedRoute, Params, MatchedRouteFragment } from './router.types';
+import { EventHandler, Event, RouterReturnType, Routes, InternalRoutes, MatchedRoute, Params, MatchedRouteFragment, NavigateFunction } from './router.types';
 import { matchRoute } from './match-route';
 import { trimString } from './helpers/string';
 
@@ -50,36 +50,48 @@ function Router(routerParams: RouterParams): RouterReturnType {
   let currentlyMatchedRoute: MatchedRoute;
   let currentParams: Params = {};
 
-  const navigate = (url: string | undefined, force = false, updateHistory = true) => {
-    if(url === undefined || (url === locationPath && !force)) {
-      return;
-    }
-
-    if(url === 'back') {
-      history.back();
-      url = window.location.pathname;
-      updateHistory = false;
-    }
-
-    const matchedRoute = matchRoute(url, routes);
-    if(matchedRoute) {
-      if(updateHistory && !isServer) {
-        history.pushState({}, '', url);
+  const navigate: NavigateFunction = (url: string | undefined, { force = false, updateHistory = true, async = false } = {}) => {
+    return new Promise<boolean>((resolve) => {
+      if(url === undefined || (url === locationPath && !force)) {
+        resolve(false);
+        return;
       }
-      currentlyMatchedRoute = matchedRoute;
-      currentParams = flattenParams(currentlyMatchedRoute.fragment);
-      locationPath = url;
-      publish({
-        eventName: 'navigation',
-        data: {
-          matchedRoute: currentlyMatchedRoute,
-          params: currentParams,
-          locationPath
+
+      if(url === 'back') {
+        history.back();
+        url = window.location.pathname;
+        updateHistory = false;
+      }
+
+      const matchedRoute = matchRoute(url, routes);
+      if(matchedRoute) {
+        if(updateHistory && !isServer) {
+          history.pushState({}, '', url);
         }
-      });
-    } else {
-      console.error(`Tried to navigate to ${url}, no route was matched!`);
-    }
+        currentlyMatchedRoute = matchedRoute;
+        currentParams = flattenParams(currentlyMatchedRoute.fragment);
+        locationPath = url;
+        const doNavigation = () => {
+          publish({
+            eventName: 'navigation',
+            data: {
+              matchedRoute: currentlyMatchedRoute,
+              params: currentParams,
+              locationPath,
+              doneCallback: () => resolve(true)
+            }
+          });
+        };
+        if(async) {
+          setTimeout(() => doNavigation());
+        } else {
+          doNavigation();
+        }
+      } else {
+        console.error(`Tried to navigate to ${url}, no route was matched!`);
+        resolve(false);
+      }
+    });
   }
 
   let subscriptionIdIncrament = 0;
@@ -87,7 +99,7 @@ function Router(routerParams: RouterParams): RouterReturnType {
     const id = ++subscriptionIdIncrament;
     // Unsubscribing should be done more seldome than pusing events so use array instead of object.
     subscriptions.push({ id, eventHandler });
-    return () => subscriptions = subscriptions.filter(sub => sub.id === id);
+    return () => subscriptions = subscriptions.filter(sub => sub.id !== id);
   }
 
   const publish = (event: Event) => {
@@ -116,7 +128,7 @@ function Router(routerParams: RouterParams): RouterReturnType {
   // If we're in the browser / Not SSR
   if(!isServer) {
     window.addEventListener("popstate", () => {
-      navigate(window.location.pathname, false, false);
+      navigate(window.location.pathname, { updateHistory: false });
     });
   }
 

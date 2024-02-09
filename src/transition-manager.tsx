@@ -23,14 +23,15 @@ function TransitionManager({
     params: initalParams,
     locationPath: initalLocationPath
   });
+  const [doneNavigatingCallback, setDoneNavigatingCallback] = useState<null | (() => void)>(null);
   const [isPending, startTransition] = useTransition();
 
   useEffect(() => {
     publish({ eventName: 'transition', data: { isTransitioning: isPending }});
-  }, [publish, isPending])
+  }, [publish, isPending]);
 
   useEffect(() => {
-    subscribe(({ eventName, data }) => {
+    const unsubscribe = subscribe(({ eventName, data }) => {
       if(eventName === 'navigation') {
         setRouterContextLocal({
           navigate,
@@ -38,8 +39,11 @@ function TransitionManager({
           locationPath: data.locationPath,
         });
         setMatchedRouteLocal(data.matchedRoute);
+        setDoneNavigatingCallback(() => () => data.doneCallback());
       }
     });
+
+    return () => unsubscribe();
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -47,6 +51,10 @@ function TransitionManager({
     startTransition(() => {
       setRouterContext(routerContext);
       setMatchedRoute(matchedRoute);
+      if(doneNavigatingCallback !== null && doneNavigatingCallback !== undefined) {
+        doneNavigatingCallback();
+        setDoneNavigatingCallback(null);
+      }
     });
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [matchedRoute])
