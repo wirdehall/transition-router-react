@@ -399,4 +399,5 @@ console.log(urlParams.search, urlParams.page);
 
 ## Contributing
 
-Anyone is free to open a PR and contribute to this project... just be civilized!
+Anyone is free to open a PR and contribute to this project... just be civilized!  
+Also, please join in on the [discussions](https://github.com/wirdehall/transition-router-react/discussions), feedback is appreciated.
