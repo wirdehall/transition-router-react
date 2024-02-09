@@ -1,6 +1,7 @@
 import { EventHandler, Event, RouterReturnType, Routes, InternalRoutes, MatchedRoute, Params, MatchedRouteFragment, NavigateFunction } from './router.types';
 import { matchRoute } from './match-route';
 import { trimString } from './helpers/string';
+import { TemporaryRedirect } from './temporary-redirect';
 
 const splitRoutes = (routes: Routes): InternalRoutes => {
   return routes.map(route => {
@@ -51,6 +52,13 @@ function Router(routerParams: RouterParams): RouterReturnType {
   let currentParams: Params = {};
 
   const navigate: NavigateFunction = (url: string | undefined, { force = false, updateHistory = true, async = false } = {}) => {
+    if(isServer) {
+      if(url === undefined) {
+        return new Promise((resolve) => resolve(false));
+      }
+      throw new TemporaryRedirect(url);
+    }
+
     return new Promise<boolean>((resolve) => {
       if(url === undefined || (url === locationPath && !force)) {
         resolve(false);

@@ -6,7 +6,7 @@ export type ExtraComponents = Readonly<{ [name: string]: ReactNode }>;
 type ExtraComponentDefenitions = Readonly<{ [name: string]: React.ComponentType<PropsWithChildren> }>;
 
 export type Guard = React.FunctionComponent<PropsWithChildren>;
-export type Guards = ReadonlyArray<React.ComponentType<PropsWithChildren>>;
+export type Guards = ReadonlyArray<Guard>;
 
 export type MatchedRouteFragment = {
   component: React.ComponentType<PropsWithChildren>;

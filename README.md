@@ -20,6 +20,7 @@ Transition-router-react is a small powerful router leveraging react transitions 
   - [Example of transition and navigation stored in redux](#example-of-transition-and-navigation-stored-in-redux)
   - [Advanced example of SSR usage using express](#advanced-example-of-ssr-usage-using-express)
   - [Example of submenu as extraComponent](#example-of-submenu-as-extracomponent)
+  - [How to use guards](#how-to-use-guards)
   - [Hooks for convinience](#hooks-for-convinience)
     - [useNavigate](#usenavigate)
     - [useLocationPath](#uselocationpath)
@@ -36,13 +37,13 @@ data api.
 A plus would be if the repo would add zero dependencies to any project using this. Dependency bloat and dependency hell is a real thing.
 
 ### Benefits compared to competitors
-| Comparison point | transition-router-react | react-router |
-|------------------|------------------------ |------------- |
-| Dependencies | 0 | 1 |
-| Size gziped + minified | 2kb | 18.7kb *(2024-02-01)*|
-| Size gziped + minified including deps | 2kb | 35.2kb *(2024-02-01)*|
+| Comparison point | transition-router-react | react-router (dom) |
+|------------------|------------------------ |------------------- |
+| Dependencies | 0 | 2 |
+| Size gziped + minified | 2.2kb [link](https://bundlephobia.com/package/transition-router-react) | 23.7kB  *(2024-02-09)* [link](https://bundlephobia.com/package/react-router-dom) |
 | Native Transitions | Yes | No, needs to hack around, using hidden functions that can be changed at any point |
 | Easy use with SSR | One router, works out of the box | Needs to use multiple routers |
+
 
 ### When not to use this router
 TRR (transition-router-react) does not try to solve every obscure use-case, I'm aming for the unix approach instead, make it do one thing well.  
@@ -74,7 +75,7 @@ $ npm i transition-router-react
 | Type             | Description                                                       |
 | ---------------- | ----------------------------------------------------------------- |
 | Routes | ReadonlyArray\<Route\> |
-| Route | Readonly<{<br>&nbsp;&nbsp;component: React.ComponentType<PropsWithChildren<{ [name: string]: ReactNode }>>;<br>&nbsp;&nbsp;path?: string;<br>&nbsp;&nbsp;children?: Routes;<br>&nbsp;&nbsp;extraComponents?: Readonly<{ [name: string]: React.ComponentType\<PropsWithChildren> }>;<br>}> |
+| Route | Readonly<{<br>&nbsp;&nbsp;component: React.ComponentType<PropsWithChildren<{ [name: string]: ReactNode }>>;<br>&nbsp;&nbsp;path?: string;<br>&nbsp;&nbsp;children?: Routes;<br>&nbsp;&nbsp;extraComponents?: Readonly<{ [name: string]: React.ComponentType\<PropsWithChildren> }>;<br>&nbsp;&nbsp;guards?: ReadonlyArray<React.FunctionComponent\<PropsWithChildren>>;<br>}> |
 | RouterParams     |  Readonly<{ routes: Routes, path?: string, ssr?: boolean }><br><br>If used in SSR context the `ssr` and `path` flag needs to be pressent.<br>`ssr` set to true and path flag set to requested path.<br> |
 | RouterReturnType |Readonly<{<br>&nbsp;&nbsp;subscribe: (eventHandler: EventHandler) => void;<br>&nbsp;&nbsp;publish: (event: Event) => void;<br>&nbsp;&nbsp;navigate: NavigateFunction;<br>&nbsp;&nbsp;initalMatchedRoute: MatchedRoute \| undefined;<br>&nbsp;&nbsp;initalLocationPath: string;<br>&nbsp;&nbsp;initalParams: Params;<br>}><br><br>The entire return object should be passed to RouterRenderer but we can also make use of subscribe and publish for advanced use-cases. |
 
@@ -340,6 +341,17 @@ const { pipe, abort } = ReactDOM.renderToPipeableStream(
   )
 }
 ```
+
+### How to use guards
+The goal with guards were as follows:
+ - An easy way to apply guards to routes that can be declared on any parent or child in the route tree.
+ - Function with hooks as most data-fetching libraries depend on them nowadays.
+ - Should not produce a flicker when suspending guard while waiting for async requests. (useTransition should do it's work).
+ - Recognisible DX pattern. Should be like writing a regular react component. No need to learn new patterns.
+ - Easy tools for redirecting away from guarded route on both client and server.
+
+For examples and documentation read the [guards.md](./docs/guards.md).
+
 
 ### Hooks for convinience
 The following hooks are exposed `useNavigate`, `useLocationPath`, `useParams` to be used in your components.
