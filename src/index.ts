@@ -4,6 +4,7 @@ import { useNavigate } from './custom-hooks/use-navigate';
 import { useLocationPath } from './custom-hooks/use-location-path';
 import { useParams } from './custom-hooks/use-params';
 import type { Event, EventHandler, Routes, ExtraComponents, NavigateFunction } from './router.types';
+import { TemporaryRedirect } from './temporary-redirect';
 
 export {
   Renderer as RouterRenderer,
@@ -16,4 +17,5 @@ export {
   EventHandler,
   ExtraComponents,
   NavigateFunction,
+  TemporaryRedirect,
 };
