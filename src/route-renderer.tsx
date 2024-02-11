@@ -1,8 +1,10 @@
 import { ReactNode, memo, useMemo } from 'react';
 import { Guard, MatchedRoute, MatchedRouteFragment } from './router.types';
+import { Suspense } from 'react';
 
 export type RendererParams = Readonly<{
   notFound?: ReactNode;
+  fallback?: ReactNode;
   matchedRoute: MatchedRoute | undefined;
 }>;
 
@@ -48,7 +50,7 @@ const renderRecursive = (matchedRoute: MatchedRouteFragment) => {
   return renderGuards(matchedRoute, <Comp></Comp>);
 }
 
-const RouteRenderer = memo(({ notFound, matchedRoute }: RendererParams) => {
+const RouteRenderer = memo(({ notFound, fallback, matchedRoute }: RendererParams) => {
   const renderedRoutes = useMemo(() => {
     if(matchedRoute) {
       return renderRecursive(matchedRoute.fragment);
@@ -62,7 +64,7 @@ const RouteRenderer = memo(({ notFound, matchedRoute }: RendererParams) => {
     return <h3>No route matched!</h3>;
   }
 
-  return (<>{ renderedRoutes }</>);
+  return <Suspense fallback={fallback}>{renderedRoutes}</Suspense>;
 });
 
 export default RouteRenderer;

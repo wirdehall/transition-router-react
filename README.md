@@ -133,9 +133,7 @@ const router = Router({ routes: getRoutes() });
 
 ReactDOM.createRoot(document.getElementById('root')!).render(
   <React.StrictMode>
-    <Suspense>
-      <RouterRenderer { ...router } />
-    </Suspense>
+    <RouterRenderer { ...router } />
   </React.StrictMode>,
 );
 ```
@@ -265,9 +263,7 @@ const Fallback = ({ getError }: { getError: () => BaseError | undefined }) => {
 const { pipe, abort } = ReactDOM.renderToPipeableStream(
   (
     <React.StrictMode>
-      <Suspense fallback={<Fallback getError={getErrorBoundaryTriggeredError} />}>
-        <RouterRenderer { ...router } />
-      </Suspense>
+      <RouterRenderer { ...router } fallback={<Fallback getError={getErrorBoundaryTriggeredError} />} />
     </React.StrictMode>
   ),
   {

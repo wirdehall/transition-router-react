@@ -140,9 +140,7 @@ import { RouterRenderer, Router, TemporaryRedirect } from 'transition-router-rea
         <Provider store={store}>
           <ThemeProvider theme={theme}>
             <CoreNavigationTransitionIndicator />
-            <Suspense fallback={<Fallback getError={getErrorBoundaryTriggeredError} />}>
-              <RouterRenderer { ...router } />
-            </Suspense>
+            <RouterRenderer { ...router } fallback={<Fallback getError={getErrorBoundaryTriggeredError} />} />
           </ThemeProvider>
         </Provider>
       </React.StrictMode>
