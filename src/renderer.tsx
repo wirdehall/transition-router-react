@@ -6,10 +6,11 @@ import RouteRenderer from './route-renderer';
 
 export type RendererParams = Readonly<{
   notFound?: ReactNode;
-  fallback?: React.ReactNode;
+  ssrSuspenseFallback?: React.ReactNode;
+  clientWithoutSsr?: true;
 }>;
 
-const Renderer = memo(({ notFound, fallback, navigate, initalParams, initalLocationPath, ...props }: RouterReturnType & RendererParams) => {
+const Renderer = memo(({ notFound, ssrSuspenseFallback, clientWithoutSsr, navigate, initalParams, initalLocationPath, ...props }: RouterReturnType & RendererParams) => {
   const [matchedRoute, setMatchedRoute] = useState<MatchedRoute | undefined>(props.initalMatchedRoute);
   const [routerContext, setRouterContext] = useState<RouterContextType>({
     navigate,
@@ -27,7 +28,12 @@ const Renderer = memo(({ notFound, fallback, navigate, initalParams, initalLocat
       initalLocationPath={initalLocationPath}
     />
     <RouterContext.Provider value={routerContext}>
-      <RouteRenderer notFound={notFound} matchedRoute={matchedRoute} fallback={fallback} />
+      <RouteRenderer
+        matchedRoute={matchedRoute}
+        notFound={notFound}
+        ssrSuspenseFallback={ssrSuspenseFallback}
+        clientWithoutSsr={clientWithoutSsr}
+      />
     </RouterContext.Provider>
   </>);
 });
