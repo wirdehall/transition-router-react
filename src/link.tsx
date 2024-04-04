@@ -39,7 +39,7 @@ const Link = forwardRef(({
     }
   }
 
-  const cssClasses = useMemo(() => `${className}${active && ' active'}`, [className, active]);
+  const cssClasses = useMemo(() => `${className}${active ? ' active' : ''}`, [className, active]);
 
   return <a href={to} className={cssClasses} onClick={clickHandler} ref={ref} { ...rest }>{ children }</a>
 });
