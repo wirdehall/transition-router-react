@@ -51,7 +51,7 @@ function Router(routerParams: RouterParams): RouterReturnType {
   let currentlyMatchedRoute: MatchedRoute;
   let currentParams: Params = {};
 
-  const navigate: NavigateFunction = (url: string | undefined, { force = false, updateHistory = true, async = false } = {}) => {
+  const navigate: NavigateFunction = (url: string | undefined, { force = false, updateHistory = true, async = false, replace = false } = {}) => {
     if(isServer) {
       if(url === undefined) {
         return new Promise((resolve) => resolve(false));
@@ -74,7 +74,11 @@ function Router(routerParams: RouterParams): RouterReturnType {
       const matchedRoute = matchRoute(url, routes);
       if(matchedRoute) {
         if(updateHistory && !isServer) {
-          history.pushState({}, '', url);
+          if(replace) {
+            history.replaceState({}, '', url);
+          } else {
+            history.pushState({}, '', url);
+          }
         }
         currentlyMatchedRoute = matchedRoute;
         currentParams = flattenParams(currentlyMatchedRoute.fragment);

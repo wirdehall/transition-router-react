@@ -5,6 +5,7 @@ import { useLocationPath } from './custom-hooks/use-location-path';
 import { useParams } from './custom-hooks/use-params';
 import type { Event, EventHandler, Routes, ExtraComponents, NavigateFunction } from './router.types';
 import { TemporaryRedirect } from './temporary-redirect';
+import Link from './link';
 
 export {
   Renderer as RouterRenderer,
@@ -18,4 +19,5 @@ export {
   ExtraComponents,
   NavigateFunction,
   TemporaryRedirect,
+  Link,
 };

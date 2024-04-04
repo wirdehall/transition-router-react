@@ -62,7 +62,7 @@ export type EventHandler = ({ eventName, data }: Event) => void;
 
 export type NavigateFunction = (
   url: string | undefined,
-  options?: { force?: boolean, updateHistory?: boolean, async?: boolean }
+  options?: { force?: boolean, updateHistory?: boolean, async?: boolean, replace?: boolean }
 ) => Promise<boolean>;
 
 export type RouterReturnType = Readonly<{

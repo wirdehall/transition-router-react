@@ -11,6 +11,7 @@ Transition-router-react is a small powerful router leveraging react transitions 
   - [Component API](#component-api)
   - [Exported types API](#exported-types-api)
   - [Hook API](#hook-api)
+  - [Link Component API](#link-component-api)
 - [How to use](#how-to-use)
   - [Defining a Route](#defining-a-route)
     - [How to define a path in your routes](#how-to-define-a-path-in-your-routes)
@@ -90,6 +91,11 @@ $ npm i transition-router-react
 | useNavigate      | Returns a function for navigating. Is the only way you should navigate inside your applicaiton.<br>The only exception would be if you are navigating outside of react context, for example in redux or something like that. Then you can use the navigate function returned in `RouterReturnType`.  |
 | useLocationPath  | Returns current urlPath works both in SSR context and in browser. |
 | useParams        | Returns an object with url params defined in your routes. Not to be confused with get params in the url. |
+
+### Link Component API
+A small Link component to use instead of a-tags in your project.
+
+For examples and documentation read the [link.md](./docs/link.md).
 
 ## How to use
 
@@ -416,6 +422,9 @@ const Link = React.forwardRef(({to, disabled = false, children, ...rest}: Params
 
 export default Link;
 ```
+**OBS!** This is just an example on how to use `useNavigate`, the library provides a Link component that we recommend you use unless it doesn't cover some specific use-case you need.
+
+For examples and documentation of the Link component read the [link.md](./docs/link.md).
 
 #### useLocationPath
 ```ts
