@@ -45,7 +45,7 @@ A plus would be if the repo would add zero dependencies to any project using thi
 | Comparison point | transition-router-react | react-router (dom) |
 |------------------|------------------------ |------------------- |
 | Dependencies | 0 | 2 |
-| Size gziped + minified | 2.2kb [link](https://bundlephobia.com/package/transition-router-react) | 23.7kB  *(2024-02-09)* [link](https://bundlephobia.com/package/react-router-dom) |
+| Size gziped + minified | 2.8kb [link](https://bundlephobia.com/package/transition-router-react) | 23.8kB  *(2024-04-04)* [link](https://bundlephobia.com/package/react-router-dom) |
 | Native Transitions | Yes | No, needs to hack around, using hidden functions that can be changed at any point |
 | Easy use with SSR | One router, works out of the box | Needs to use multiple routers |
 
