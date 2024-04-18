@@ -6,10 +6,11 @@ type Params = {
   disabled?: boolean;
   exact?: boolean;
   pattern?: string | RegExp;
+  stopPropagation?: true;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href">;
 
 const Link = forwardRef(({
-  to, disabled = false, onClick, children, className, exact, pattern, ...rest
+  to, disabled = false, onClick, children, className, exact, pattern, stopPropagation, ...rest
 }: Params, ref: Ref<HTMLAnchorElement> | undefined) => {
   const navigate = useNavigate();
   const path = useLocationPath();
@@ -35,6 +36,9 @@ const Link = forwardRef(({
       }
       if(!disabled) {
         navigate(to);
+      }
+      if(stopPropagation) {
+        e.stopPropagation();
       }
     }
   }

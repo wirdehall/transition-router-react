@@ -20,14 +20,16 @@ Any parameter you could use with an `<a>`-tag will be passed through to the a-ta
   disabled?: boolean;
   exact?: boolean;
   pattern?: string | RegExp;
+  stopPropagation?: true;
 }
 ```
 * `to` where the link should link to. (Url)
-* `disabled`if the link should be disabled. It will not navigate if this is set to true.
+* `disabled` if the link should be disabled. It will not navigate if this is set to true.
 * `exact` then the entire url needs to match exactly given in `to` or in `pattern` if pattern is given as a string.
 * `pattern`: If this is given it will ignore `to` when matching if the link should have active class or not.
   * If it's a regex it will do a simple regex test to see if it matches.
   * If it's a string it will just see if the current url starts with the same as the pattern given.
+* `stopPropagation`: Prevent the click event from propagating without the need to use your own onClick method.
 * `href` can't be used, use `to` instead.
   
 ### How 'exact' works
