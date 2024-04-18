@@ -120,7 +120,7 @@ A path does not start with a slash or end trailing slash.
 
 A path is otherwise just a string with the ability to use wildcards and splat. 
 
-A path can also be an array of strings which can be matched against to display your component, in case of an array, all other rules for a path still applies.
+A path can also be an array of strings which can be matched against to display your component. In case of an array, all other rules for a path still applies.
 
 ##### Wildcard
 A wildcard starts with a colon.  
