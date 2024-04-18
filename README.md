@@ -80,7 +80,7 @@ $ npm i transition-router-react
 | Type             | Description                                                       |
 | ---------------- | ----------------------------------------------------------------- |
 | Routes | ReadonlyArray\<Route\> |
-| Route | Readonly<{<br>&nbsp;&nbsp;component: React.ComponentType<PropsWithChildren<{ [name: string]: ReactNode }>>;<br>&nbsp;&nbsp;path?: string;<br>&nbsp;&nbsp;children?: Routes;<br>&nbsp;&nbsp;extraComponents?: Readonly<{ [name: string]: React.ComponentType\<PropsWithChildren> }>;<br>&nbsp;&nbsp;guards?: ReadonlyArray<React.FunctionComponent\<PropsWithChildren>>;<br>}> |
+| Route | Readonly<{<br>&nbsp;&nbsp;component: React.ComponentType<PropsWithChildren<{ [name: string]: ReactNode }>>;<br>&nbsp;&nbsp;path?: string \| ReadonlyArray\<string\>;<br>&nbsp;&nbsp;children?: Routes;<br>&nbsp;&nbsp;extraComponents?: Readonly<{ [name: string]: React.ComponentType\<PropsWithChildren> }>;<br>&nbsp;&nbsp;guards?: ReadonlyArray<React.FunctionComponent\<PropsWithChildren>>;<br>}> |
 | RouterParams     |  Readonly<{ routes: Routes, path?: string, ssr?: boolean }><br><br>If used in SSR context the `ssr` and `path` flag needs to be pressent.<br>`ssr` set to true and path flag set to requested path.<br> |
 | RouterReturnType |Readonly<{<br>&nbsp;&nbsp;subscribe: (eventHandler: EventHandler) => void;<br>&nbsp;&nbsp;publish: (event: Event) => void;<br>&nbsp;&nbsp;navigate: NavigateFunction;<br>&nbsp;&nbsp;initalMatchedRoute: MatchedRoute \| undefined;<br>&nbsp;&nbsp;initalLocationPath: string;<br>&nbsp;&nbsp;initalParams: Params;<br>}><br><br>The entire return object should be passed to RouterRenderer but we can also make use of subscribe and publish for advanced use-cases. |
 
@@ -118,7 +118,9 @@ Path is optional as long as your `Route` has children.
 A `Route` with children can still have a path, it will be prepended to all child routes.  
 A path does not start with a slash or end trailing slash.
 
-A path is otherwise just a string with the ability to use wildcards and splat.  
+A path is otherwise just a string with the ability to use wildcards and splat. 
+
+A path can also be an array of strings which can be matched against to display your component, in case of an array, all other rules for a path still applies.
 
 ##### Wildcard
 A wildcard starts with a colon.  

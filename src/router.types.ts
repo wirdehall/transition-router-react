@@ -23,7 +23,7 @@ export type MatchedRoute = {
 
 export type Route = Readonly<{
   component: React.ComponentType<PropsWithChildren<{ [name: string]: ReactNode }>>;
-  path?: string;
+  path?: string | ReadonlyArray<string>;
   children?: Routes;
   extraComponents?: ExtraComponentDefenitions;
   guards?: Guards;
@@ -38,6 +38,7 @@ export type PathFragment = {
 export type PathFragments = ReadonlyArray<PathFragment>;
 
 export type InternalRoute = Route & Readonly<{
+  path?: string;
   pathFragments: PathFragments;
   children?: InternalRoutes;
   containsSplat: boolean;

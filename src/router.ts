@@ -1,31 +1,51 @@
-import { EventHandler, Event, RouterReturnType, Routes, InternalRoutes, MatchedRoute, Params, MatchedRouteFragment, NavigateFunction } from './router.types';
+import { 
+  EventHandler, Event, RouterReturnType, Routes, InternalRoutes, MatchedRoute, 
+  Params, MatchedRouteFragment, NavigateFunction, InternalRoute, Route
+} from './router.types';
 import { matchRoute } from './match-route';
 import { trimString } from './helpers/string';
 import { TemporaryRedirect } from './temporary-redirect';
 
-const splitRoutes = (routes: Routes): InternalRoutes => {
-  return routes.map(route => {
-    let containsSplat = false;
-
-    return {
-      ...route,
-      pathFragments: route.path ? trimString(route.path, '/').split('/').map((fragment, index, array) => {
-        if(fragment === '*') {
-          if(array.length !== index + 1) {
-            throw new Error("Route splat (*) can only be at the end of path, maybe you wanted to use a wildcard (:name) instead?");
-          }
-          containsSplat = true;
-          return { fragment, wildcard: false, splat: true };
-        } else if(fragment.startsWith(':')) {
-          return { fragment: fragment.replace(':', ''), wildcard: true, splat: false };
-        } else {
-          return { fragment, wildcard: false, splat: false };
+const getInternalRoute = (path: string, route: Route): InternalRoute => {
+  let containsSplat = false;
+  return {
+    ...route,
+    path,
+    pathFragments: trimString(path, '/').split('/').map((fragment, index, array) => {
+      if(fragment === '*') {
+        if(array.length !== index + 1) {
+          throw new Error("Route splat (*) can only be at the end of path, maybe you wanted to use a wildcard (:name) instead?");
         }
-      }) : [],
-      children: route.children === undefined ? undefined : splitRoutes(route.children),
-      containsSplat,
+        containsSplat = true;
+        return { fragment, wildcard: false, splat: true };
+      } else if(fragment.startsWith(':')) {
+        return { fragment: fragment.replace(':', ''), wildcard: true, splat: false };
+      } else {
+        return { fragment, wildcard: false, splat: false };
+      }
+    }),
+    children: route.children === undefined ? undefined : splitRoutes(route.children),
+    containsSplat,
+  }
+}
+
+const splitRoutes = (routes: Routes): InternalRoutes => {
+  return routes.reduce((acc: Array<InternalRoute>, route) => {
+    if(route.path === undefined) {
+      acc.push({
+        ...route,
+        path: undefined,
+        pathFragments: [],
+        children: route.children === undefined ? undefined : splitRoutes(route.children),
+        containsSplat: false,
+      });
+    } else if(typeof route.path === 'string') {
+      acc.push(getInternalRoute(route.path, route));
+    } else {
+      route.path.map((path) => acc.push(getInternalRoute(path, route)));
     }
-  });
+    return acc;
+  }, []);
 }
 
 const flattenParams = (matchedRoute: MatchedRouteFragment): Params => {
