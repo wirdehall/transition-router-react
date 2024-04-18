@@ -20,7 +20,7 @@ Any parameter you could use with an `<a>`-tag will be passed through to the a-ta
   disabled?: boolean;
   exact?: boolean;
   pattern?: string | RegExp;
-  stopPropagation?: true;
+  stopPropagation?: boolean;
 }
 ```
 * `to` where the link should link to. (Url)

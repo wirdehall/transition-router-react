@@ -6,7 +6,7 @@ type Params = {
   disabled?: boolean;
   exact?: boolean;
   pattern?: string | RegExp;
-  stopPropagation?: true;
+  stopPropagation?: boolean;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href">;
 
 const Link = forwardRef(({
