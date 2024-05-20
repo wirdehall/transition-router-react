@@ -6,6 +6,7 @@ import { useParams } from './custom-hooks/use-params';
 import type { Event, EventHandler, Routes, ExtraComponents, NavigateFunction } from './router.types';
 import { TemporaryRedirect } from './temporary-redirect';
 import Link from './link';
+import { RouterContext, RouterContextType } from './router-context';
 
 export {
   Renderer as RouterRenderer,
@@ -20,4 +21,6 @@ export {
   NavigateFunction,
   TemporaryRedirect,
   Link,
+  RouterContext, 
+  RouterContextType
 };
