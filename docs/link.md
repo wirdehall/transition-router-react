@@ -21,6 +21,7 @@ Any parameter you could use with an `<a>`-tag will be passed through to the a-ta
   exact?: boolean;
   pattern?: string | RegExp;
   stopPropagation?: boolean;
+  external?: boolean;
 }
 ```
 * `to` where the link should link to. (Url)
@@ -31,6 +32,7 @@ Any parameter you could use with an `<a>`-tag will be passed through to the a-ta
   * If it's a string it will just see if the current url starts with the same as the pattern given.
 * `stopPropagation`: Prevent the click event from propagating without the need to use your own onClick method.
 * `href` can't be used, use `to` instead.
+* `external`: Tell the link component this is a external link (not the current website) and that we should use the browsers normal navigation behaviour instead.
   
 ### How 'exact' works
 If we vist `/users/1` link 2 and 3 will be shown as active while the first one will not since it's looking for an exact match.  

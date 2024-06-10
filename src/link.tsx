@@ -7,10 +7,11 @@ type Params = {
   exact?: boolean;
   pattern?: string | RegExp;
   stopPropagation?: boolean;
+  external?: boolean;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href">;
 
 const Link = forwardRef(({
-  to, disabled = false, onClick, children, className, exact, pattern, stopPropagation, ...rest
+  to, disabled = false, onClick, children, className, exact, pattern, stopPropagation, external, ...rest
 }: Params, ref: Ref<HTMLAnchorElement> | undefined) => {
   const navigate = useNavigate();
   const path = useLocationPath();
@@ -29,7 +30,7 @@ const Link = forwardRef(({
   }, [path, to, exact, pattern]);
 
   const clickHandler = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    if(!e.ctrlKey && !e.metaKey) {
+    if(!e.ctrlKey && !e.metaKey && external !== true) {
       e.preventDefault();
       if(onClick) {
         onClick(e);
@@ -43,7 +44,10 @@ const Link = forwardRef(({
     }
   }
 
-  const cssClasses = useMemo(() => `${className}${active ? ' active' : ''}${disabled ? ' disabled' : ''}`, [className, active, disabled]);
+  const cssClasses = useMemo(() => {
+    const cssClasses = `${className ? className : ''}${active ? ' active' : ''}${disabled ? ' disabled' : ''}`;
+    return cssClasses > '' ? cssClasses : undefined;
+  }, [className, active, disabled]);
 
   return <a href={to} className={cssClasses} onClick={clickHandler} ref={ref} { ...rest }>{ children }</a>
 });

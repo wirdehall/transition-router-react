@@ -1,5 +1,5 @@
-import { 
-  EventHandler, Event, RouterReturnType, Routes, InternalRoutes, MatchedRoute, 
+import {
+  EventHandler, Event, RouterReturnType, Routes, InternalRoutes, MatchedRoute,
   Params, MatchedRouteFragment, NavigateFunction, InternalRoute, Route
 } from './router.types';
 import { matchRoute } from './match-route';
