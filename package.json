@@ -1,6 +1,6 @@
 {
   "name": "transition-router-react",
-  "version": "1.5.0-rc0",
+  "version": "1.5.0-rc1",
   "description": "A small powerful router leveraging react transitions for a more interactive UX.",
   "main": "dist/index.js",
   "types": "dist/index.d.ts",
