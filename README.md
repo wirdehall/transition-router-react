@@ -304,7 +304,7 @@ const Fallback = ({ getError }: { getError: () => BaseError | undefined }) => {
     locationPath: router.initalLocationPath,
   }
 
-  return <RouterContext.Provider value={routerContext}><ErrorRenderer error={getError()} /></RouterContext.Provider>;
+  return <RouterContext value={routerContext}><ErrorRenderer error={getError()} /></RouterContext>;
 }
 
 const { pipe, abort } = ReactDOM.renderToPipeableStream(

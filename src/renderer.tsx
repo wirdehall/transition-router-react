@@ -27,14 +27,14 @@ const Renderer = memo(({ notFound, ssrSuspenseFallback, clientWithoutSsr, naviga
       initalParams={initalParams}
       initalLocationPath={initalLocationPath}
     />
-    <RouterContext.Provider value={routerContext}>
+    <RouterContext value={routerContext}>
       <RouteRenderer
         matchedRoute={matchedRoute}
         notFound={notFound}
         ssrSuspenseFallback={ssrSuspenseFallback}
         clientWithoutSsr={clientWithoutSsr}
       />
-    </RouterContext.Provider>
+    </RouterContext>
   </>);
 });
 
