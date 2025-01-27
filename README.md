@@ -61,7 +61,7 @@ Features not included on purpose:
 If one of these features are required for you, then this router is probably not for your current project.
 
 ## Requirements
-* React >= 18
+* React >= 19
 
 ## How to install
 ```bash
