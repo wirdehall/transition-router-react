@@ -1,6 +1,9 @@
 # Transition-router-react <!-- omit in toc -->
 Transition-router-react is a small powerful router leveraging react transitions for a more interactive UX.
 
+## Upgrade from v1 to v2 <!-- omit in toc -->
+If you want to upgrade from v1 to v2 follow these instructions: [Upgrade from v1 to v2](./docs/upgrade-v1-v2.md).
+
 ## Table of content <!-- omit in toc -->
 - [Motivation](#motivation)
   - [Benefits compared to competitors](#benefits-compared-to-competitors)
@@ -30,6 +33,8 @@ Transition-router-react is a small powerful router leveraging react transitions 
     - [useNavigate](#usenavigate)
     - [useLocationPath](#uselocationpath)
     - [useParams](#useparams)
+    - [useSplat](#usesplat)
+    - [useFragment](#usefragment)
 - [Contributing](#contributing)
 
 
@@ -82,7 +87,7 @@ $ npm i transition-router-react
 | Routes | ReadonlyArray\<Route\> |
 | Route | Readonly<{<br>&nbsp;&nbsp;component: React.ComponentType<PropsWithChildren<{ [name: string]: ReactNode }>>;<br>&nbsp;&nbsp;path?: string \| ReadonlyArray\<string\>;<br>&nbsp;&nbsp;children?: Routes;<br>&nbsp;&nbsp;extraComponents?: Readonly<{ [name: string]: React.ComponentType\<PropsWithChildren> }>;<br>&nbsp;&nbsp;guards?: ReadonlyArray<React.FunctionComponent\<PropsWithChildren>>;<br>}> |
 | RouterParams     |  Readonly<{ routes: Routes, path?: string, ssr?: boolean }><br><br>If used in SSR context the `ssr` and `path` flag needs to be pressent.<br>`ssr` set to true and path flag set to requested path.<br> |
-| RouterReturnType |Readonly<{<br>&nbsp;&nbsp;subscribe: (eventHandler: EventHandler) => void;<br>&nbsp;&nbsp;publish: (event: Event) => void;<br>&nbsp;&nbsp;navigate: NavigateFunction;<br>&nbsp;&nbsp;initalMatchedRoute: MatchedRoute \| undefined;<br>&nbsp;&nbsp;initalLocationPath: string;<br>&nbsp;&nbsp;initalParams: Params;<br>}><br><br>The entire return object should be passed to RouterRenderer but we can also make use of subscribe and publish for advanced use-cases. |
+| RouterReturnType |Readonly<{<br>&nbsp;&nbsp;subscribe: (eventHandler: EventHandler) => void;<br>&nbsp;&nbsp;publish: (event: Event) => void;<br>&nbsp;&nbsp;navigate: NavigateFunction;<br>&nbsp;&nbsp;initialMatchedRoute: MatchedRoute \| undefined;<br>&nbsp;&nbsp;initialLocationPath: string;<br>&nbsp;&nbsp;initialParams: Params;<br>&nbsp;&nbsp;initialSplat?: string<br>&nbsp;&nbsp;initialFragment?: string;<br>}><br><br>The entire return object should be passed to RouterRenderer but we can also make use of subscribe and publish for advanced use-cases. |
 
 ### Hook API
 
@@ -91,6 +96,8 @@ $ npm i transition-router-react
 | useNavigate      | Returns a function for navigating. Is the only way you should navigate inside your applicaiton.<br>The only exception would be if you are navigating outside of react context, for example in redux or something like that. Then you can use the navigate function returned in `RouterReturnType`.  |
 | useLocationPath  | Returns current urlPath works both in SSR context and in browser. |
 | useParams        | Returns an object with url params defined in your routes. Not to be confused with get params in the url. |
+| useSplat        | Returns the part of the url that is defined as a splat in your route. |
+| useFragment      | Returns current urlFragment works only in browser. (Will always return undefined on server as fragments arn't passed to the server) |
 
 ### Link Component API
 A small Link component to use instead of a-tags in your project.
@@ -247,7 +254,7 @@ export default function CoreDefaultLayout({ children }: PropsWithChildren) {
 
 const router = Router({ routes: getRoutes() });
 
-store.dispatch(setLocationAndParams({ location: router.initalLocationPath, params: router.initalParams }));
+store.dispatch(setLocationAndParams({ location: router.initialLocationPath, params: router.initialParams }));
 router.subscribe(({ eventName, data }) => {
   if(eventName === 'transition') {
     store.dispatch(setTransitionStatus(data.isTransitioning));
@@ -300,8 +307,10 @@ const Fallback = ({ getError }: { getError: () => BaseError | undefined }) => {
   }
   const routerContext = {
     navigate: router.navigate,
-    params: router.initalParams,
-    locationPath: router.initalLocationPath,
+    params: router.initialParams,
+    locationPath: router.initialLocationPath,
+    fragment: router.initialFragment,
+    splat: router.initialSplat,
   }
 
   return <RouterContext value={routerContext}><ErrorRenderer error={getError()} /></RouterContext>;
@@ -397,13 +406,13 @@ For examples and documentation read the [guards.md](./docs/guards.md).
 
 
 ### Hooks for convinience
-The following hooks are exposed `useNavigate`, `useLocationPath`, `useParams` to be used in your components.
+The following hooks are exposed `useNavigate`, `useLocationPath`, `useParams`, `useSplat` and `useFragment` to be used in your components.
 
 #### useNavigate
 Example on how to do a Link component that can be used throughout the system.
 ```ts
 import { useNavigate } from 'transition-router-react';
-import React, { Ref } from "react";
+import React, { Ref } from 'react';
 
 type Params = {
   to?: string;
@@ -442,6 +451,21 @@ const urlParams = useParams();
 console.log(urlParams.search, urlParams.page);
 ```
 
+#### useSplat
+Url wildcard defined in your routes.  
+Example: `path: 'blog/*'`
+```ts
+const splat = useSplat();
+console.log(splat);
+```
+
+#### useFragment
+Url fragment used for deep linking on a page, not defined in routes.  
+Example: `url: 'blog/1#nice-recepie'`
+```ts
+const fragment = useFragment();
+console.log(fragment);
+```
 
 ## Contributing
 

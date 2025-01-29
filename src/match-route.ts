@@ -19,7 +19,7 @@ export const matchRouteFragment = (pathFragments: ReadonlyArray<string>, routes:
         }
         continue;
       } else {
-        throw new Error("Empty path without children not allowed, if you want a catchall use splash (*)");
+        throw new Error("Empty path without children not allowed, if you want a catchall use splat (*)");
       }
     } else {
       if(!route.containsSplat && route.children === undefined && route.pathFragments.length !== pathFragments.length) {
@@ -33,7 +33,11 @@ export const matchRouteFragment = (pathFragments: ReadonlyArray<string>, routes:
           break;
         }
         if(routeFragment.splat) {
-          return { ...baseRouteFragment, params };
+          let splat = '';
+          for(let j = i; j < pathFragments.length; j++) {
+            splat += pathFragments[j];
+          }
+          return { ...baseRouteFragment, params, splat };
         }
         if(routeFragment.wildcard) {
           params = { ...params, [routeFragment.fragment]: pathFragments[i] };

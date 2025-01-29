@@ -23,7 +23,7 @@ My example of an AuthGuard uses RTK, you could easily substitute fetching your u
 AuthGuard looks like this:
 ```ts
 import { useAppDispatch, useAppSelector } from "@data/hooks";
-import { PropsWithChildren } from "react";
+import { PropsWithChildren } from 'react';
 import { useNavigate } from "transition-router-react";
 import { addError } from "@data/notification/notification.slice";
 

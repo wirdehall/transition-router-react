@@ -6,6 +6,8 @@ import { matchRoute } from './match-route';
 import { trimString } from './helpers/string';
 import { TemporaryRedirect } from './temporary-redirect';
 
+const fragmentRegex = /#[^/]*$/;
+
 const getInternalRoute = (path: string, route: Route): InternalRoute => {
   let containsSplat = false;
   return {
@@ -55,6 +57,13 @@ const flattenParams = (matchedRoute: MatchedRouteFragment): Params => {
   return { ...matchedRoute.params, ...flattenParams(matchedRoute.child) }
 }
 
+const findSplatRecursive = (matchedRoute: MatchedRouteFragment): string | undefined => {
+  if(matchedRoute.child === undefined) {
+    return matchedRoute.splat;
+  }
+  return findSplatRecursive(matchedRoute.child)
+}
+
 type RouterParams = Readonly<{
   routes: Routes,
   path?: string,
@@ -70,6 +79,7 @@ function Router(routerParams: RouterParams): RouterReturnType {
   let subscriptions: Array<{ id: number, eventHandler: EventHandler}> = [];
   let currentlyMatchedRoute: MatchedRoute;
   let currentParams: Params = {};
+  let currentSplat: string | undefined;
 
   const navigate: NavigateFunction = (url: string | undefined, { force = false, updateHistory = true, async = false, replace = false } = {}) => {
     if(isServer) {
@@ -91,9 +101,11 @@ function Router(routerParams: RouterParams): RouterReturnType {
         updateHistory = false;
       }
 
-      const matchedRoute = matchRoute(url, routes);
+      const [ fragment ] = url.match(fragmentRegex) ?? [];
+      const urlPath = fragment ? url.replace(fragment, '') : url;
+      const matchedRoute = matchRoute(urlPath, routes);
       if(matchedRoute) {
-        if(updateHistory && !isServer) {
+        if(updateHistory) {
           if(replace) {
             history.replaceState({}, '', url);
           } else {
@@ -102,7 +114,8 @@ function Router(routerParams: RouterParams): RouterReturnType {
         }
         currentlyMatchedRoute = matchedRoute;
         currentParams = flattenParams(currentlyMatchedRoute.fragment);
-        locationPath = url;
+        currentSplat = findSplatRecursive(currentlyMatchedRoute.fragment);
+        locationPath = urlPath;
         const doNavigation = () => {
           publish({
             eventName: 'navigation',
@@ -110,6 +123,8 @@ function Router(routerParams: RouterParams): RouterReturnType {
               matchedRoute: currentlyMatchedRoute,
               params: currentParams,
               locationPath,
+              fragment,
+              splat: currentSplat,
               doneCallback: () => resolve(true)
             }
           });
@@ -138,6 +153,7 @@ function Router(routerParams: RouterParams): RouterReturnType {
     subscriptions.map((sub) => sub.eventHandler(event));
   }
 
+  let fragment: string | undefined;
   // SSR / Not in the browser
   if(isServer) {
     if(routerParams.path === undefined) {
@@ -147,14 +163,16 @@ function Router(routerParams: RouterParams): RouterReturnType {
   } else {
     locationPath = routerParams.path === undefined ? window.location.pathname : routerParams.path;
     history = window.history;
+    fragment = window.location.hash;
   }
 
-  const initalMatchedRoute = matchRoute(locationPath, routes);
-  if(initalMatchedRoute === undefined) {
+  const initialMatchedRoute = matchRoute(locationPath, routes);
+  if(initialMatchedRoute === undefined) {
     console.error(`Tried to navigate to ${locationPath}, no route was matched!`);
   } else {
-    currentlyMatchedRoute = initalMatchedRoute;
+    currentlyMatchedRoute = initialMatchedRoute;
     currentParams = flattenParams(currentlyMatchedRoute.fragment);
+    currentSplat = findSplatRecursive(currentlyMatchedRoute.fragment);
   }
 
   // If we're in the browser / Not SSR
@@ -168,9 +186,11 @@ function Router(routerParams: RouterParams): RouterReturnType {
     subscribe,
     publish,
     navigate,
-    initalMatchedRoute,
-    initalLocationPath: locationPath,
-    initalParams: currentParams,
+    initialMatchedRoute,
+    initialLocationPath: locationPath,
+    initialParams: currentParams,
+    initialFragment: fragment,
+    initialSplat: currentSplat,
   };
 }
 

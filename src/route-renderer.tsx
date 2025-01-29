@@ -1,7 +1,6 @@
-import { ReactNode, memo, useMemo, useState } from 'react';
+import { ReactNode, memo, useMemo, useState, Suspense, useEffect } from 'react';
 import { Guard, MatchedRoute, MatchedRouteFragment } from './router.types';
-import { Suspense } from 'react';
-import { useEffect } from 'react';
+import { useFragment } from './custom-hooks/use-fragment';
 
 export type RendererParams = Readonly<{
   matchedRoute: MatchedRoute | undefined;
@@ -54,12 +53,32 @@ const renderRecursive = (matchedRoute: MatchedRouteFragment) => {
 
 const RouteRenderer = memo(({ notFound, ssrSuspenseFallback, matchedRoute, clientWithoutSsr }: RendererParams) => {
   const [ initialRenderDone, setInitialRenderDone ] = useState(clientWithoutSsr ? false : true);
+  const fragment = useFragment();
 
   useEffect(() => {
     if(initialRenderDone === false) {
       setInitialRenderDone(true);
     }
   }, []);
+
+  useEffect(() => { // Scroll down to anchor if fragment exists and the page is rendered.
+    if(fragment !== undefined) {
+      let element: HTMLElement | null;
+      let i = 0;
+      const checkElementInterval = setInterval(() => { // We have to wait for element to appear on page.
+        element = document.getElementById(fragment.replace('#', ''));
+        if(element) {
+          clearInterval(checkElementInterval);
+          location.href = fragment;
+        }
+        if(++i > 100) {
+          clearInterval(checkElementInterval);
+        }
+      }, 10);
+
+      return () => { clearInterval(checkElementInterval); };
+    }
+  }, [fragment]);
 
   const renderedRoutes = useMemo(() => {
     if(matchedRoute) {

@@ -10,12 +10,14 @@ export type RendererParams = Readonly<{
   clientWithoutSsr?: true;
 }>;
 
-const Renderer = memo(({ notFound, ssrSuspenseFallback, clientWithoutSsr, navigate, initalParams, initalLocationPath, ...props }: RouterReturnType & RendererParams) => {
-  const [matchedRoute, setMatchedRoute] = useState<MatchedRoute | undefined>(props.initalMatchedRoute);
+const Renderer = memo(({ notFound, ssrSuspenseFallback, clientWithoutSsr, navigate, initialParams, initialLocationPath, initialFragment, initialSplat, ...props }: RouterReturnType & RendererParams) => {
+  const [matchedRoute, setMatchedRoute] = useState<MatchedRoute | undefined>(props.initialMatchedRoute);
   const [routerContext, setRouterContext] = useState<RouterContextType>({
     navigate,
-    params: initalParams,
-    locationPath: initalLocationPath,
+    params: initialParams,
+    locationPath: initialLocationPath,
+    fragment: initialFragment,
+    splat: initialSplat,
   });
 
   return (<>
@@ -24,8 +26,10 @@ const Renderer = memo(({ notFound, ssrSuspenseFallback, clientWithoutSsr, naviga
       navigate={navigate}
       setMatchedRoute={setMatchedRoute}
       setRouterContext={setRouterContext}
-      initalParams={initalParams}
-      initalLocationPath={initalLocationPath}
+      initialParams={initialParams}
+      initialLocationPath={initialLocationPath}
+      initialFragment={initialFragment}
+      initialSplat={initialSplat}
     />
     <RouterContext value={routerContext}>
       <RouteRenderer

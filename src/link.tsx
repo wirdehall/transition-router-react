@@ -1,5 +1,5 @@
 import { useLocationPath, useNavigate } from './index';
-import { Ref, useMemo, AnchorHTMLAttributes, forwardRef } from "react";
+import { Ref, useMemo, AnchorHTMLAttributes, forwardRef } from 'react';
 
 type Params = {
   to?: string;
@@ -9,6 +9,8 @@ type Params = {
   stopPropagation?: boolean;
   external?: boolean;
 } & Omit<AnchorHTMLAttributes<HTMLAnchorElement>, "href">;
+
+const fragmentRegex = /#[^/]*$/;
 
 const Link = forwardRef(({
   to, disabled = false, onClick, children, className, exact, pattern, stopPropagation, external, ...rest
@@ -31,6 +33,13 @@ const Link = forwardRef(({
 
   const clickHandler = (e: React.MouseEvent<HTMLAnchorElement>) => {
     if(!e.ctrlKey && !e.metaKey && external !== true) {
+      if(to !== undefined) {
+        const [ match ] = to.match(fragmentRegex) ?? [];
+        if(match && to === match) { // if the whole link is an anchor.
+          return false;
+        }
+      }
+
       e.preventDefault();
       if(onClick) {
         onClick(e);

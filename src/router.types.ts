@@ -1,4 +1,4 @@
-import type { PropsWithChildren, ReactNode } from "react";
+import type { PropsWithChildren, ReactNode } from 'react';
 
 export type Params = Readonly<{ [key: string]: string }>;
 
@@ -14,6 +14,7 @@ export type MatchedRouteFragment = {
   params: Params;
   extraComponents?: ExtraComponentDefenitions;
   guards?: Guards;
+  splat?: string;
 }
 
 export type MatchedRoute = {
@@ -49,7 +50,7 @@ export type InternalRoutes = ReadonlyArray<InternalRoute>;
 
 export type NavigationEvent = {
   eventName: 'navigation',
-  data: { matchedRoute: MatchedRoute, params: Params, locationPath: string, doneCallback: () => void },
+  data: { matchedRoute: MatchedRoute, params: Params, splat?: string; fragment?: string; locationPath: string, doneCallback: () => void },
 }
 
 export type TransitionEvent = {
@@ -70,7 +71,9 @@ export type RouterReturnType = Readonly<{
   subscribe: (eventHandler: EventHandler) => () => void;
   publish: (event: Event) => void;
   navigate: NavigateFunction;
-  initalMatchedRoute: MatchedRoute | undefined;
-  initalLocationPath: string,
-  initalParams: Params,
+  initialMatchedRoute: MatchedRoute | undefined;
+  initialLocationPath: string,
+  initialParams: Params,
+  initialFragment?: string,
+  initialSplat?: string,
 }>;

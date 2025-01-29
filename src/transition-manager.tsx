@@ -10,18 +10,22 @@ type Props = Readonly<{
 function TransitionManager({
   subscribe,
   publish,
-  initalMatchedRoute,
+  initialMatchedRoute,
   navigate,
-  initalParams,
-  initalLocationPath,
+  initialParams,
+  initialLocationPath,
+  initialFragment,
+  initialSplat,
   setMatchedRoute,
   setRouterContext
 }: RouterReturnType & Props) {
-  const [matchedRoute, setMatchedRouteLocal] = useState<MatchedRoute | undefined>(initalMatchedRoute);
+  const [matchedRoute, setMatchedRouteLocal] = useState<MatchedRoute | undefined>(initialMatchedRoute);
   const [routerContext, setRouterContextLocal] = useState<RouterContextType>({
     navigate,
-    params: initalParams,
-    locationPath: initalLocationPath
+    params: initialParams,
+    locationPath: initialLocationPath,
+    fragment: initialFragment,
+    splat: initialSplat,
   });
   const [doneNavigatingCallback, setDoneNavigatingCallback] = useState<null | (() => void)>(null);
   const [isPending, startTransition] = useTransition();
@@ -37,6 +41,8 @@ function TransitionManager({
           navigate,
           params: data.params,
           locationPath: data.locationPath,
+          fragment: data.fragment,
+          splat: data.splat,
         });
         setMatchedRouteLocal(data.matchedRoute);
         setDoneNavigatingCallback(() => () => data.doneCallback());

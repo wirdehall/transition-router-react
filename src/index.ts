@@ -3,6 +3,8 @@ import Router from './router';
 import { useNavigate } from './custom-hooks/use-navigate';
 import { useLocationPath } from './custom-hooks/use-location-path';
 import { useParams } from './custom-hooks/use-params';
+import { useFragment } from './custom-hooks/use-fragment';
+import { useSplat } from './custom-hooks/use-splat';
 import type { Event, EventHandler, Routes, ExtraComponents, NavigateFunction } from './router.types';
 import { TemporaryRedirect } from './temporary-redirect';
 import Link from './link';
@@ -15,6 +17,8 @@ export {
   useNavigate,
   useLocationPath,
   useParams,
+  useFragment,
+  useSplat,
   Routes,
   Event,
   EventHandler,
