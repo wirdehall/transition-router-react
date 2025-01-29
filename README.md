@@ -47,11 +47,11 @@ data api.
 A plus would be if the repo would add zero dependencies to any project using this. Dependency bloat and dependency hell is a real thing.
 
 ### Benefits compared to competitors
-| Comparison point | transition-router-react | react-router (dom) |
+| Comparison point | transition-router-react | react-router |
 |------------------|------------------------ |------------------- |
-| Dependencies | 0 | 2 |
-| Size gziped + minified | 2.8kb [link](https://bundlephobia.com/package/transition-router-react) | 23.8kB  *(2024-04-04)* [link](https://bundlephobia.com/package/react-router-dom) |
-| Native Transitions | Yes | No, needs to hack around, using hidden functions that can be changed at any point |
+| Dependencies | 0 | 4 |
+| Size gziped + minified | 3.2kb [link](https://bundlephobia.com/package/transition-router-react) | 46.3kB  *(2025-01-29)* [link](https://bundlephobia.com/package/react-router) |
+| Native React Transitions | Yes | No, needs to hack around, using hidden functions that can be changed at any point |
 | Easy use with SSR | One router, works out of the box | Needs to use multiple routers |
 
 
