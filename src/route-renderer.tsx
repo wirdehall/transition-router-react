@@ -62,7 +62,7 @@ const RouteRenderer = memo(({ notFound, ssrSuspenseFallback, matchedRoute, clien
   }, []);
 
   useEffect(() => { // Scroll down to anchor if fragment exists and the page is rendered.
-    if(fragment !== undefined) {
+    if(fragment !== undefined && fragment !== '' && fragment.startsWith('#')) {
       let element: HTMLElement | null;
       let i = 0;
       const checkElementInterval = setInterval(() => { // We have to wait for element to appear on page.
