@@ -80,6 +80,7 @@ function Router(routerParams: RouterParams): RouterReturnType {
   let currentlyMatchedRoute: MatchedRoute;
   let currentParams: Params = {};
   let currentSplat: string | undefined;
+  let backCallbackResolve: undefined | ((value: boolean | PromiseLike<boolean>) => void);
 
   const navigate: NavigateFunction = (url: string | undefined, { force = false, updateHistory = true, async = false, replace = false } = {}) => {
     if(isServer) {
@@ -97,46 +98,45 @@ function Router(routerParams: RouterParams): RouterReturnType {
 
       if(url === 'back') {
         history.back();
-        url = window.location.pathname;
-        updateHistory = false;
-      }
-
-      const [ fragment ] = url.match(fragmentRegex) ?? [];
-      const urlPath = fragment ? url.replace(fragment, '') : url;
-      const matchedRoute = matchRoute(urlPath, routes);
-      if(matchedRoute) {
-        if(updateHistory) {
-          if(replace) {
-            history.replaceState({}, '', url);
-          } else {
-            history.pushState({}, '', url);
-          }
-        }
-        currentlyMatchedRoute = matchedRoute;
-        currentParams = flattenParams(currentlyMatchedRoute.fragment);
-        currentSplat = findSplatRecursive(currentlyMatchedRoute.fragment);
-        locationPath = urlPath;
-        const doNavigation = () => {
-          publish({
-            eventName: 'navigation',
-            data: {
-              matchedRoute: currentlyMatchedRoute,
-              params: currentParams,
-              locationPath,
-              fragment,
-              splat: currentSplat,
-              doneCallback: () => resolve(true)
-            }
-          });
-        };
-        if(async) {
-          setTimeout(() => doNavigation());
-        } else {
-          doNavigation();
-        }
+        backCallbackResolve = resolve;
       } else {
-        console.error(`Tried to navigate to ${url}, no route was matched!`);
-        resolve(false);
+        const [ fragment ] = url.match(fragmentRegex) ?? [];
+        const urlPath = fragment ? url.replace(fragment, '') : url;
+        const matchedRoute = matchRoute(urlPath, routes);
+        if(matchedRoute) {
+          if(updateHistory) {
+            if(replace) {
+              history.replaceState({}, '', url);
+            } else {
+              history.pushState({}, '', url);
+            }
+          }
+          currentlyMatchedRoute = matchedRoute;
+          currentParams = flattenParams(currentlyMatchedRoute.fragment);
+          currentSplat = findSplatRecursive(currentlyMatchedRoute.fragment);
+          locationPath = urlPath;
+          const doNavigation = () => {
+            publish({
+              eventName: 'navigation',
+              data: {
+                matchedRoute: currentlyMatchedRoute,
+                params: currentParams,
+                locationPath,
+                fragment,
+                splat: currentSplat,
+                doneCallback: () => resolve(true)
+              }
+            });
+          };
+          if(async) {
+            setTimeout(() => doNavigation());
+          } else {
+            doNavigation();
+          }
+        } else {
+          console.error(`Tried to navigate to ${url}, no route was matched!`);
+          resolve(false);
+        }
       }
     });
   }
@@ -178,7 +178,12 @@ function Router(routerParams: RouterParams): RouterReturnType {
   // If we're in the browser / Not SSR
   if(!isServer) {
     window.addEventListener("popstate", () => {
-      navigate(window.location.pathname, { updateHistory: false });
+      navigate(window.location.pathname, { updateHistory: false }).then((result) => {
+        if(backCallbackResolve !== undefined) {
+          backCallbackResolve(result);
+          backCallbackResolve = undefined;
+        }
+      });
     });
   }
 
