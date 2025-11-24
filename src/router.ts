@@ -178,11 +178,13 @@ function Router(routerParams: RouterParams): RouterReturnType {
   // If we're in the browser / Not SSR
   if(!isServer) {
     window.addEventListener("popstate", () => {
+      publish({ eventName: 'navigate-back', data: { state: 'start', locationPath: window.location.pathname } });
       navigate(window.location.pathname, { updateHistory: false }).then((result) => {
         if(backCallbackResolve !== undefined) {
           backCallbackResolve(result);
           backCallbackResolve = undefined;
         }
+        publish({ eventName: 'navigate-back', data: { state: 'done', locationPath: window.location.pathname } });
       });
     });
   }

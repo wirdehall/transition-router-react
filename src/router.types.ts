@@ -49,16 +49,21 @@ export type Routes = ReadonlyArray<Route>;
 export type InternalRoutes = ReadonlyArray<InternalRoute>;
 
 export type NavigationEvent = {
-  eventName: 'navigation',
-  data: { matchedRoute: MatchedRoute, params: Params, splat?: string; fragment?: string; locationPath: string, doneCallback: () => void },
+  eventName: 'navigation';
+  data: { matchedRoute: MatchedRoute, params: Params, splat?: string; fragment?: string; locationPath: string, doneCallback: () => void };
 }
 
 export type TransitionEvent = {
-  eventName: 'transition',
-  data: { isTransitioning: boolean }
+  eventName: 'transition';
+  data: { isTransitioning: boolean };
 }
 
-export type Event = NavigationEvent | TransitionEvent;
+export type NavigateBackEvent = {
+  eventName: 'navigate-back';
+  data: { state: 'start' | 'done'; locationPath: string; };
+}
+
+export type Event = NavigationEvent | TransitionEvent | NavigateBackEvent;
 
 export type EventHandler = ({ eventName, data }: Event) => void;
 
